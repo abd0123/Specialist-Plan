@@ -16,7 +16,7 @@ public class Knapsack {
 		values = new int[] { 100, 70, 50, 10 };
 		weights = new int[] { 10, 4, 6, 12 };
 
-		memo = new int[4][13+1];// +1 to avoid index out of bound error
+		memo = new int[n+1][w+1];// +1 to avoid index out of bound error
 		
 		// fill memo;
 		for (int[] e : memo)
@@ -28,7 +28,7 @@ public class Knapsack {
 		
 		/* Bottom-Up*/
 		// create the memo
-		int[][] bottomUp = new int[4+1][13+1];
+		int[][] bottomUp = new int[n+1][w+1];
 		
 		// initialize the base case (no need here because array already initialized with zeroes)
 		
@@ -37,8 +37,8 @@ public class Knapsack {
 		 *}
 		 */
 		
-		for(int idx = 3; idx > -1; idx--) {
-			for (int remw = 0; remw < 14; remw++) {
+		for(int idx = n-1; idx > -1; idx--) {
+			for (int remw = 0; remw < w+1; remw++) {
 				// compute results
 				int take = 0;
 				int leave = 0;
@@ -58,6 +58,35 @@ public class Knapsack {
 		}
 		
 		System.out.println(bottomUp[0][w]);
+
+
+		/* The bottom up state trick which saves memory 
+		   would be implemented as follows:
+		bottomUp = new int[2][w+1];
+		for(int idx=n-1;idx>-1;idx--) {
+			for(int remw=0;remw<w+1;remw++) {
+				int take = 0;
+				int leave = 0;
+				int ans = 0;
+				// Take
+				if(remw>=weights[idx]) {
+					take = bottomUp[1][remw-weights[idx]] +  values[idx];
+ 
+				}
+				// Leave
+				leave = bottomUp[1][remw];
+				ans = Math.max(take, leave);
+				bottomUp[0][remw] = ans;
+			}
+ 
+			for(int i=0;i<w+1;i++) {
+				bottomUp[1][i] = bottomUp[0][i];
+			}
+ 
+		}
+
+		*/
+
 		
 	}
 
