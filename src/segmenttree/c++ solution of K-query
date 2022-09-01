@@ -1,0 +1,126 @@
+#include <bits/stdc++.h>
+using namespace std;
+const char el ='\n';
+const char sp = ' ';
+typedef long long ll;
+#define ios {ios_base::sync_with_stdio(0); cin.tie(0); cout.tie(0);}
+#define mp(x, y) make_pair(x, y)
+#define popCnt(x) (__builtin_popcountll(x))
+#define pb(x) push_back(x);
+
+ struct Node {
+    int val;
+    int l, r;
+    int idx;
+    bool IsQuery;
+    Node(){
+
+    }
+}
+;
+ struct SegmentTree {
+    vector<int> sg;
+    int N;
+
+ SegmentTree(int N) {
+        this->N = N;
+        sg = vector<int>(N << 1);
+    }
+
+ void updatePoint(int idx, int val) { // update = incerment
+        idx += N - 1;
+        sg[idx] += val;
+        while (idx > 1) {
+            idx >>= 1;
+            sg[idx] = sg[idx << 1] + sg[(idx << 1) | 1];
+        }
+    }
+
+ int query(int l, int r) {
+        return query(1, 1, N, l, r);
+    }
+
+ int query(int node, int start, int end, int l, int r) {
+        if (start >= l && end <= r)
+            return sg[node];
+        if (start > r || end < l)
+            return 0;
+        int mid = start + end >> 1;
+        int leftChild = node << 1, rightChild = leftChild | 1;
+        return (query(leftChild, start, mid, l, r) + query(rightChild, mid + 1, end, l, r));
+    }
+};
+ bool comp(Node a, Node b) {
+    if (a.val == b.val) {
+        if (a.IsQuery)
+            return true;
+        if (b.IsQuery)
+            return false;
+        return true;
+    }
+    return a.val>b.val ;
+}
+int main(){
+    ios;
+    int n ;
+    cin>>n;
+    vector<int>arr(n);
+    for(int &x:arr)
+        cin>>x;
+    int q ;
+    cin>>q;
+    vector<int>all(n+q);
+    int idx = 0;
+    vector<pair<int,pair<int,int>>> queries(q);
+    for (int i = 0; i < q; i++) {
+        int x,y,z;
+        cin>>x>>y>>z;
+        pair<int,pair<int,int>> cur= make_pair(x, make_pair(y,z));
+        queries[i] = cur;
+        all[idx++] = cur.second.second;
+    }
+    for (int i = 0; i < n; i++) {
+        all[idx++] = arr[i];
+    }
+    sort(all.begin(), all.end());
+    map<int, int> map;
+    int comperssedVal = 1;
+    for (int x : all) {
+        if (map.count(x)==0) {
+            map[x]=comperssedVal++;
+        }
+    }
+    vector<Node>offlinePre(n+q);
+    for (int i = 0; i < n; i++) {
+        Node cur =  Node();
+        cur.IsQuery = false;
+        cur.idx = i + 1;
+        cur.val = map[arr[i]];
+        offlinePre[i] = cur;
+    }
+    for (int i = 0; i < q; i++) {
+        Node cur =  Node();
+        cur.idx = i;
+        cur.IsQuery = true;
+        cur.val = map[queries[i].second.second];
+        cur.l = queries[i].first;
+        cur.r = queries[i].second.first;
+        offlinePre[n + i] = cur;
+    }
+    sort(offlinePre.begin(), offlinePre.end(),comp);
+    int N = 1;
+    while (n + q + 10 > N)
+        N <<= 1;
+    SegmentTree st =  SegmentTree(N);
+    vector<int>ans(q);
+    for (Node cur : offlinePre) {
+        if (cur.IsQuery) {
+            ans[cur.idx] = st.query(cur.l, cur.r);
+        } else {
+            st.updatePoint(cur.idx, 1);
+        }
+    }
+    for (int x : ans)
+        cout<<x<<"\n";
+    return 0;
+}
