@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class GetKthOneInRange {
+public class Main {
 	static PrintWriter pw;
 	static Scanner sc;
 
@@ -9,6 +9,7 @@ public class GetKthOneInRange {
 		pw = new PrintWriter(System.out);
 		sc = new Scanner(System.in);
 		int n = sc.nextInt();
+		int q = sc.nextInt();
 		int N = 1;
 		while (n > N)
 			N <<= 1;
@@ -17,7 +18,16 @@ public class GetKthOneInRange {
 			arr[i] = sc.nextInt();
 		}
 		SegmentTree st = new SegmentTree(arr);
-		pw.println(st.getKthOneInRangeFromLtoR(1, 2, 3));
+		while (q-- > 0) {
+			int t = sc.nextInt();
+			int k = sc.nextInt() + 1;
+			if (t == 1) {
+				arr[k] = 1 - arr[k];
+				st.updatePoint(k, arr[k]);
+			} else {
+				pw.println(st.getKthOne(k) - 1);
+			}
+		}
 		pw.flush();
 	}
 
@@ -77,8 +87,10 @@ public class GetKthOneInRange {
 		public int getKthOneInRangeFromLtoR(int k, int l, int r) { // the value in the input arrray is either 0 or 1
 			// will be the same as get kth one in the whole array if we count the number of
 			// ones before the given range .i.e
-			// from [0,L-1] ,note that we don't handle the case that when k is greater than the number of ones in the range
-			// which can be handled easily by checking if the return value in the range [L,R]
+			// from [0,L-1] ,note that we don't handle the case that when k is greater than
+			// the number of ones in the range
+			// which can be handled easily by checking if the return value in the range
+			// [L,R]
 			if (l > 1)
 				k += query(1, l - 1);
 			return getKthOne(1, 1, N, k);
