@@ -9,5 +9,5 @@ The included topics so far are:
 - [LIS(Longest Increasing Subsequence)](https://github.com/abd0123/Specialist-Plan/blob/master/src/dp/LongestIncreasingSubsequence.java)
 - [Kadane(Maximum Subarray Sum)](https://github.com/abd0123/Specialist-Plan/blob/master/src/dp/Kadane.java)
 - [Minimising Coins](https://github.com/abd0123/Specialist-Plan/blob/master/src/dp/MinimisingCoins.java)
-- [Segment Tree Node] (https://github.com/abd0123/Specialist-Plan/blob/master/SegmentTreeNode)
+- [Segment Tree Node](https://github.com/abd0123/Specialist-Plan/blob/master/SegmentTreeNode)
 Plan by Abdelrahman Fathy, Karim ElMosalamy and Omar Mohammad
