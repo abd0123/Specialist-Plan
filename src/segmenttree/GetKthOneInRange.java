@@ -1,6 +1,6 @@
 import java.util.*;
 import java.io.*;
-
+// link to the problem : https://codeforces.com/edu/course/2/lesson/4/2/practice/contest/273278/problem/B
 public class Main {
 	static PrintWriter pw;
 	static Scanner sc;
