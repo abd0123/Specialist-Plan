@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class Main {
+public class GetKthOneInRange {
 	static PrintWriter pw;
 	static Scanner sc;
 
@@ -77,7 +77,7 @@ public class Main {
 		public int getKthOneInRangeFromLtoR(int k, int l, int r) { // the value in the input arrray is either 0 or 1
 			// will be the same as get kth one in the whole array if we count the number of
 			// ones before the given range .i.e
-			// from [0,L-1] ,note that we don't handle the case that when k is greater than the number of ones in the range 
+			// from [0,L-1] ,note that we don't handle the case that when k is greater than the number of ones in the range
 			// which can be handled easily by checking if the return value in the range [L,R]
 			if (l > 1)
 				k += query(1, l - 1);

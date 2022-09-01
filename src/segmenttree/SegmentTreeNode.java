@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class Main {
+public class SegmentTreeNode {
 	static PrintWriter pw;
 	static Scanner sc;
 	public static void main(String[] args) throws Exception {

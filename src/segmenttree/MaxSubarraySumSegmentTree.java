@@ -1,7 +1,7 @@
 import java.util.*;
 import java.io.*;
 
-public class Main {
+public class MaxSubarraySumSegmentTree {
 	static PrintWriter pw;
 	static Scanner sc;
 
