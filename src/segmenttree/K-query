@@ -1,0 +1,164 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	static PrintWriter pw;
+	static Scanner sc;
+
+	static int compare(Node a, Node b) {
+		if (a.val == b.val) {
+			if (a.IsQuery)
+				return -1;
+			if (b.IsQuery)
+				return 1;
+			return 0;
+		}
+		return b.val - a.val;
+	}
+
+	public static void main(String[] args) throws Exception {
+		pw = new PrintWriter(System.out);
+		sc = new Scanner(System.in);
+		int n = sc.nextInt();
+		int[] arr = new int[n];
+		for (int i = 0; i < n; i++) {
+			arr[i] = sc.nextInt();
+		}
+		int q = sc.nextInt();
+		Integer[] all = new Integer[n + q];
+		int idx = 0;
+		int[][] queries = new int[q][3];
+		for (int i = 0; i < q; i++) {
+			int[] cur = new int[3];
+			cur[0] = sc.nextInt();
+			cur[1] = sc.nextInt();
+			cur[2] = sc.nextInt();
+			queries[i] = cur;
+			all[idx++] = cur[2];
+		}
+		for (int i = 0; i < n; i++) {
+			all[idx++] = arr[i];
+		}
+		Arrays.sort(all);
+		HashMap<Integer, Integer> map = new HashMap<>();
+		int comperssedVal = 1;
+		for (int x : all) {
+			if (!map.containsKey(x)) {
+				map.put(x, comperssedVal++);
+			}
+		}
+		Node[] offlinePre = new Node[n + q];
+		for (int i = 0; i < n; i++) {
+			Node cur = new Node();
+			cur.IsQuery = false;
+			cur.idx = i + 1;
+			cur.val = map.get(arr[i]);
+			offlinePre[i] = cur;
+		}
+		for (int i = 0; i < q; i++) {
+			Node cur = new Node();
+			cur.idx = i;
+			cur.IsQuery = true;
+			cur.val = map.get(queries[i][2]);
+			cur.l = queries[i][0];
+			cur.r = queries[i][1];
+			offlinePre[n + i] = cur;
+		}
+		Arrays.sort(offlinePre, (a, b) -> compare(a, b));
+		int N = 1;
+		while (n + q + 10 > N)
+			N <<= 1;
+		SegmentTree st = new SegmentTree(N);
+		int[] ans = new int[q];
+		for (Node cur : offlinePre) {
+			if (cur.IsQuery) {
+				ans[cur.idx] = st.query(cur.l, cur.r);
+			} else {
+				st.updatePoint(cur.idx, 1);
+			}
+		}
+		for (int x : ans)
+			pw.println(x);
+		pw.flush();
+	}
+
+	static class Node {
+		int val;
+		int l, r;
+		int idx;
+		boolean IsQuery;
+	}
+
+	static class SegmentTree {
+		int[] sg;
+		int N;
+
+		public SegmentTree(int N) {
+			this.N = N;
+			sg = new int[N << 1];
+		}
+
+		public void updatePoint(int idx, int val) { // update = incerment
+			idx += N - 1;
+			sg[idx] += val;
+			while (idx > 1) {
+				idx >>= 1;
+				sg[idx] = sg[idx << 1] + sg[(idx << 1) | 1];
+			}
+		}
+
+		public int query(int l, int r) {
+			return query(1, 1, N, l, r);
+		}
+
+		public int query(int node, int start, int end, int l, int r) {
+			if (start >= l && end <= r)
+				return sg[node];
+			if (start > r || end < l)
+				return 0;
+			int mid = start + end >> 1;
+			int leftChild = node << 1, rightChild = leftChild | 1;
+			return (query(leftChild, start, mid, l, r) + query(rightChild, mid + 1, end, l, r));
+		}
+	}
+
+	static class Scanner {
+		StringTokenizer st;
+		BufferedReader br;
+
+		public Scanner(InputStream s) {
+			br = new BufferedReader(new InputStreamReader(s));
+		}
+
+		public Scanner(String r) throws Exception {
+			br = new BufferedReader(new FileReader(new File(r)));
+		}
+
+		public String next() throws IOException {
+			while (st == null || !st.hasMoreTokens())
+				st = new StringTokenizer(br.readLine());
+			return st.nextToken();
+		}
+
+		public int nextInt() throws IOException {
+			return Integer.parseInt(next());
+		}
+
+		public long nextLong() throws IOException {
+			return Long.parseLong(next());
+		}
+
+		public String nextLine() throws IOException {
+			return br.readLine();
+		}
+
+		public double nextDouble() throws IOException {
+			return Double.parseDouble(next());
+		}
+
+		public boolean ready() throws IOException {
+			return br.ready();
+		}
+
+	}
+}
