@@ -14,7 +14,7 @@ The included topics so far are:
 # Segment Tree
 
 - [Segment Tree](https://github.com/abd0123/Specialist-Plan/blob/master/src/segmenttree/SegmentTree.java)
-- [Segment Tree Node](https://github.com/abd0123/Specialist-Plan/blob/master/src/segmenttree/SegmentTree.java)
+- [Segment Tree Node](https://github.com/abd0123/Specialist-Plan/blob/master/src/segmenttree/SegmentTreeNode.java)
 - [Kth One Segment Tree](https://github.com/abd0123/Specialist-Plan/blob/master/src/segmenttree/GetKthOneInRange.java)
 - [Max Subarray Sum Segment Tree](https://github.com/abd0123/Specialist-Plan/blob/master/src/segmenttree/MaxSubarraySumSegmentTree.java)
 
