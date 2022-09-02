@@ -1,0 +1,127 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	static PrintWriter pw;
+	static Scanner sc;
+
+	public static void main(String[] args) throws Exception {
+		pw = new PrintWriter(System.out);
+		sc = new Scanner(System.in);
+		char[] arr = sc.next().toCharArray();
+		int n = arr.length;
+		int N = 1;
+		while (n > N)
+			N <<= 1;
+		SegmentTree st = new SegmentTree(N, arr);
+		int q = sc.nextInt();
+		while (q-- > 0) {
+			int l = sc.nextInt();
+			int r = sc.nextInt();
+			pw.println(st.query(l, r) * 2);
+		}
+		pw.flush();
+	}
+
+	static class Node {
+		int opened, closed, ans;
+
+		public Node(char c) {
+			if (c == '(') {
+				opened = 1;
+			} else
+				closed = 1;
+		}
+	}
+
+	static Node merge(Node left, Node right) {
+		if (left == null)
+			return right;
+		if (right == null)
+			return left;
+		Node res = new Node('0');
+		int gained = Math.min(left.opened, right.closed);
+		res.ans = left.ans + right.ans + gained;
+		res.opened = left.opened + right.opened - gained;
+		res.closed = left.closed + right.closed - gained;
+		return res;
+	}
+
+	static class SegmentTree {
+		Node[] sg;
+		int N;
+
+		SegmentTree(int N, char[] arr) {
+			this.N = N;
+			sg = new Node[N << 1];
+			build(1, 1, N, arr);
+		}
+
+		void build(int node, int l, int r, char[] arr) {
+			if (l == r) {
+				if (l <= arr.length)
+					sg[node] = new Node(arr[l - 1]);
+			} else {
+				int mid = l + r >> 1;
+				int leftChild = node << 1, rightChild = leftChild | 1;
+				build(leftChild, l, mid, arr);
+				build(rightChild, mid + 1, r, arr);
+				sg[node] = merge(sg[leftChild], sg[rightChild]);
+			}
+		}
+
+		int query(int l, int r) {
+			return query(1, 1, N, l, r).ans;
+		}
+
+		Node query(int node, int start, int end, int l, int r) {
+			if (start >= l && end <= r)
+				return sg[node];
+			if (start > r || end < l)
+				return null;
+			int mid = start + end >> 1;
+			int leftChild = node << 1, rightChild = leftChild | 1;
+			return merge(query(leftChild, start, mid, l, r), query(rightChild, mid + 1, end, l, r));
+		}
+	}
+
+	static class Scanner {
+		StringTokenizer st;
+		BufferedReader br;
+
+		public Scanner(InputStream s) {
+			br = new BufferedReader(new InputStreamReader(s));
+		}
+
+		public Scanner(String r) throws Exception {
+			br = new BufferedReader(new FileReader(new File(r)));
+		}
+
+		public String next() throws IOException {
+			while (st == null || !st.hasMoreTokens())
+				st = new StringTokenizer(br.readLine());
+			return st.nextToken();
+		}
+
+		public int nextInt() throws IOException {
+			return Integer.parseInt(next());
+		}
+
+		public long nextLong() throws IOException {
+			return Long.parseLong(next());
+		}
+
+		public String nextLine() throws IOException {
+			return br.readLine();
+		}
+
+		public double nextDouble() throws IOException {
+			return Double.parseDouble(next());
+		}
+
+		public boolean ready() throws IOException {
+			return br.ready();
+		}
+
+	}
+}
