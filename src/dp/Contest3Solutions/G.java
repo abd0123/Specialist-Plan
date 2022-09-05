@@ -51,7 +51,7 @@ public class G {
 
 	//The solution for this problem relies on us applying the LIS algorithm in a slightly different way.
 	//We are told we can use any rotation of the objects we have any number of times however since each
-	//box that is placed on top of another box must be strictly smaller on all dimensions, to simulate
+	//box that is placed on top of another box must be strictly smaller on both bottom facing dimensions, to simulate
 	//the ability to use all 6 faces of the object we can simply place all 6 possible dimensions in the
 	//array of objects we apply LIS over. Then we perform the LIS on the array(the array size at this point
 	//is 6*n), instead of adding +1 for each possible object we instead add that objects height(since this
