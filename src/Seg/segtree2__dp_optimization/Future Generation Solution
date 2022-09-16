@@ -1,0 +1,174 @@
+import java.util.*;
+import java.io.*;
+
+public class C {
+	static Scanner sc;
+	static PrintWriter pw;
+	static int inf = (int) -1e8;
+
+	public static void main(String[] args) throws Exception {
+		pw = new PrintWriter(System.out);
+		sc = new Scanner(System.in);
+		int n = sc.nextInt();
+		char[][] all = new char[n][];
+		ArrayList<String>[] allSub = new ArrayList[n];
+		for (int i = 0; i < n; i++) {
+			all[i] = sc.next().toCharArray();
+			allSub[i] = new ArrayList<>();
+			int sz = all[i].length;
+			for (int j = 1; j < 1 << sz; j++) {
+				StringBuilder cur = new StringBuilder();
+				for (int k = 0; k < sz; k++) {
+					if ((j & (1 << k)) != 0) {
+						cur.append(all[i][k]);
+					}
+				}
+				allSub[i].add(cur.toString());
+			}
+			allSub[i].sort(null);
+		}
+		SegTree[] dp = new SegTree[n];
+		int N = 1;
+		while (N < allSub[n - 1].size())
+			N <<= 1;
+		dp[n - 1] = new SegTree(N);
+		for (int i = 0; i < allSub[n - 1].size(); i++) {
+			dp[n - 1].update(i, allSub[n - 1].get(i).length());
+		}
+		for (int i = n - 2; i >= 0; i--) {
+			N = 1;
+			while (N < allSub[i].size())
+				N <<= 1;
+			dp[i] = new SegTree(N);
+			for (int j = 0; j < allSub[i].size(); j++) {
+				int s = 0, end = allSub[i + 1].size() - 1;
+				String cur = allSub[i].get(j);
+				while (s <= end) {
+					int mid = s + end >> 1;
+					if (allSub[i + 1].get(mid).compareTo(cur) > 0)
+						end = mid - 1;
+					else
+						s = mid + 1;
+				}
+				if (s == allSub[i + 1].size())
+					continue;
+				int opt = dp[i + 1].query(s, allSub[i + 1].size() - 1);
+				if (opt == inf)
+					continue;
+				dp[i].update(j, opt + cur.length());
+			}
+		}
+		int ans = dp[0].query(0, allSub[0].size() - 1);
+		if (ans == inf) {
+			System.out.println(-1);
+		} else
+			System.out.println(ans);
+		pw.flush();
+	}
+
+	static class SegTree {
+		int N;
+		int[] sg;
+
+		public SegTree(int N) {
+			this.N = N;
+			sg = new int[N << 1];
+			Arrays.fill(sg, inf);
+		}
+
+		public void update(int idx, int val) {
+			idx++;
+			idx += N - 1;
+			sg[idx] = val;
+			while (idx > 1) {
+				idx >>= 1;
+				sg[idx] = Math.max(sg[idx << 1], sg[idx << 1 | 1]);
+			}
+		}
+
+		public int query(int l, int r) {
+			l++;
+			r++;
+			return query(1, 1, N, l, r);
+		}
+
+		public int query(int node, int s, int e, int l, int r) {
+			if (s >= l && e <= r)
+				return sg[node];
+			if (s > r || e < l)
+				return inf;
+			int mid = s + e >> 1;
+			int left = node << 1, right = left | 1;
+			return Math.max(query(left, s, mid, l, r), query(right, mid + 1, e, l, r));
+		}
+	}
+
+	static class Scanner {
+		StringTokenizer st;
+		BufferedReader br;
+
+		public Scanner(InputStream s) {
+			br = new BufferedReader(new InputStreamReader(s));
+		}
+
+		public Scanner(String r) throws Exception {
+			br = new BufferedReader(new FileReader(new File(r)));
+		}
+
+		public String next() throws IOException {
+			while (st == null || !st.hasMoreTokens())
+				st = new StringTokenizer(br.readLine());
+			return st.nextToken();
+		}
+
+		public int nextInt() throws IOException {
+			return Integer.parseInt(next());
+		}
+
+		public long nextLong() throws IOException {
+			return Long.parseLong(next());
+		}
+
+		public String nextLine() throws IOException {
+			return br.readLine();
+		}
+
+		public double nextDouble() throws IOException {
+			return Double.parseDouble(next());
+		}
+
+		public long[] nextlongArray(int n) throws IOException {
+			long[] a = new long[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextLong();
+			return a;
+		}
+
+		public Long[] nextLongArray(int n) throws IOException {
+			Long[] a = new Long[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextLong();
+			return a;
+		}
+
+		public int[] nextIntArray(int n) throws IOException {
+			int[] a = new int[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextInt();
+			return a;
+		}
+
+		public Integer[] nextIntegerArray(int n) throws IOException {
+			Integer[] a = new Integer[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextInt();
+			return a;
+		}
+
+		public boolean ready() throws IOException {
+			return br.ready();
+		}
+
+	}
+
+}
