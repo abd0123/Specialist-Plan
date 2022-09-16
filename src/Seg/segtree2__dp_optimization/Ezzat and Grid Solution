@@ -1,0 +1,200 @@
+import java.util.*;
+import java.io.*;
+
+public class A {
+	static Scanner sc;
+	static PrintWriter pw;
+ // note that this solution TlEs but passes in C++ , remember that what matters is the idea not the solution (the contest is downvoted because of bad preparation) 
+ // no one in the university get it AC in java
+	public static void main(String[] args) throws Exception {
+		pw = new PrintWriter(System.out);
+		sc = new Scanner(System.in);
+		int n = sc.nextInt(), m = sc.nextInt();
+		int[][] segs = new int[m][3];
+		Integer[] toBeComperssed = new Integer[2 * m];
+		for (int i = 0; i < m; i++) {
+			segs[i][0] = sc.nextInt() - 1;
+			segs[i][1] = sc.nextInt();
+			segs[i][2] = sc.nextInt();
+			toBeComperssed[i * 2] = segs[i][1];
+			toBeComperssed[i * 2 + 1] = segs[i][2];
+		}
+		HashMap<Integer, Integer> map = new HashMap<>();
+		Arrays.sort(toBeComperssed);
+		int idx = 1;
+		for (int x : toBeComperssed) {
+			if (!map.containsKey(x)) {
+				map.put(x, idx++);
+			}
+		}
+		for (int i = 0; i < m; i++) {
+			segs[i][1] = map.get(segs[i][1]);
+			segs[i][2] = map.get(segs[i][2]);
+		}
+		int N = 1;
+		while (m * 2 > N)
+			N <<= 1;
+		Arrays.sort(segs, (a, b) -> a[0] - b[0]);
+		SegTree all = new SegTree(N);
+		int[] path = new int[n], dp = new int[n];
+		for (int i = 0; i < m;) {
+			int max = 0;
+			int j = i;
+			int cur = segs[i][0];
+			int par = cur;
+			while (j < m && segs[j][0] == cur) {
+				pair opt = all.query(segs[j][1], segs[j][2]);
+				int val = 0;
+				if (opt != null)
+					val = opt.val;
+				if (val > max) {
+					max = val;
+					par = opt.idx;
+				}
+				j++;
+			}
+			path[cur] = par;
+			dp[cur] = max + 1;
+			for (; i < j; i++) {
+				all.updateRange(segs[i][1], segs[i][2], dp[cur], cur);
+			}
+		}
+		int start = -1;
+		for (int i = 0; i < n; i++) {
+			if (start == -1 || dp[start] < dp[i]) {
+				start = i;
+			}
+		}
+		boolean[] keep = new boolean[n];
+		while (true) {
+			keep[start] = true;
+			if (start == path[start])
+				break;
+			start = path[start];
+		}
+		int cnt = 0;
+		StringBuilder ans = new StringBuilder();
+		for (int i = 0; i < n; i++) {
+			if (!keep[i]) {
+				cnt++;
+				ans.append(i + 1 + " ");
+			}
+		}
+		pw.println(cnt);
+		pw.println(ans);
+		pw.flush();
+	}
+
+	static class pair {
+		int val, idx;
+
+		pair(int x, int y) {
+			val = x;
+			idx = y;
+		}
+
+		public String toString() {
+			return val + " " + idx;
+		}
+	}
+
+	static pair merge(pair x, pair y, boolean f) {
+		pair res = new pair(0, 0);
+		if (x == null)
+			return y;
+		if (y == null)
+			return x;
+		if (x.val > y.val) {
+			res = x;
+		} else
+			res = y;
+		if (f)
+			return new pair(res.val, res.idx);
+		return res;
+	}
+
+	static class SegTree {
+		int N;
+		pair[] sg, lazy;
+
+		SegTree(int N) {
+			this.N = N;
+			sg = new pair[N << 1];
+			lazy = new pair[N << 1];
+		}
+
+		void updateRange(int l, int r, int val, int idx) {
+			updateRange(1, 1, N, l, r, val, idx);
+		}
+
+		void updateRange(int node, int s, int e, int l, int r, int val, int idx) {
+			if (s > r || e < l)
+				return;
+			if (s >= l && e <= r) {
+				sg[node] = new pair(val, idx);
+				lazy[node] = new pair(val, idx);
+				return;
+			}
+			propagate(node);
+			int left = node << 1, right = left | 1;
+			int mid = s + e >> 1;
+			updateRange(left, s, mid, l, r, val, idx);
+			updateRange(right, mid + 1, e, l, r, val, idx);
+			sg[node] = merge(sg[left], sg[right], true);
+		}
+
+		void propagate(int node) {
+			if (lazy[node] == null)
+				return;
+			int left = node << 1, right = left | 1;
+			sg[left] = new pair(lazy[node].val, lazy[node].idx);
+			sg[right] = new pair(lazy[node].val, lazy[node].idx);
+			lazy[left] = new pair(lazy[node].val, lazy[node].idx);
+			lazy[right] = new pair(lazy[node].val, lazy[node].idx);
+			lazy[node] = null;
+		}
+
+		pair query(int l, int r) {
+			return query(1, 1, N, l, r);
+		}
+
+		pair query(int node, int s, int e, int l, int r) {
+			if (s > r || e < l)
+				return null;
+			if (s >= l && e <= r) {
+				return sg[node];
+			}
+			propagate(node);
+			int left = node << 1, right = left | 1;
+			int mid = s + e >> 1;
+			return merge(query(left, s, mid, l, r), query(right, mid + 1, e, l, r), false);
+		}
+	}
+
+	static class Scanner {
+		BufferedReader br;
+		StringTokenizer st;
+
+		public Scanner(InputStream s) {
+			br = new BufferedReader(new InputStreamReader(s));
+		}
+
+		public Scanner(String s) throws Exception {
+			br = new BufferedReader(new FileReader(new File(s)));
+		}
+
+		public String next() throws Exception {
+			while (st == null || !st.hasMoreTokens())
+				st = new StringTokenizer(br.readLine());
+			return st.nextToken();
+		}
+
+		public int nextInt() throws Exception {
+			return Integer.parseInt(next());
+		}
+
+		public long nextLong() throws Exception {
+			return Long.parseLong(next());
+		}
+	}
+}
