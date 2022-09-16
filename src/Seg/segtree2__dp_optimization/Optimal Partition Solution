@@ -1,0 +1,192 @@
+import java.io.*;
+import java.util.*;
+
+public class A {
+	static PrintWriter pw;
+	static Scanner sc;
+
+	public static void main(String[] args) throws Exception {
+		sc = new Scanner(System.in);
+		pw = new PrintWriter(System.out);
+		int t = sc.nextInt();
+		while (t-- > 0) {
+			int n = sc.nextInt();
+			int[] arr = sc.nextIntArray(n);
+			long[][] pre = new long[n + 1][2];
+			for (int i = 1; i <= n; i++) {
+				pre[i][0] = arr[i - 1];
+				pre[i][0] += pre[i - 1][0];
+				pre[i][1] = i;
+			}
+			Arrays.sort(pre,
+					(a, b) -> Long.compare(a[0], b[0]) == 0 ? Long.compare(b[1], a[1]) : Long.compare(a[0], b[0]));
+			int[] map = new int[n + 1];
+			for (int i = 0; i <= n; i++) {
+				map[(int) pre[i][1]] = i + 1;
+			}
+			long ans = 0;
+			int N = 1;
+			while (n + 1 > N)
+				N <<= 1;
+			SegmentTree dp = new SegmentTree(N);
+			for (int i = 0; i <= n; i++) {
+				if (i == 0) {
+					dp.updatePoint(map[i], 0);
+				} else {
+					ans += arr[i - 1] > 0 ? 1 : arr[i - 1] == 0 ? 0 : -1;
+					ans = Math.max(ans, dp.query(1, map[i]) + i);
+					dp.updatePoint(map[i], ans - i);
+				}
+			}
+			pw.println(ans);
+		}
+		pw.flush();
+	}
+
+	static class SegmentTree {
+		long[] sg;
+		int N;
+		long inf = -(long) 1e15;
+
+		public SegmentTree(int N) {
+			this.N = N;
+			sg = new long[(N) << 1];
+			Arrays.fill(sg, inf);
+		}
+
+		public void updatePoint(int idx, long value) {
+			idx += N - 1;
+			if (sg[idx] >= value)
+				return;
+			sg[idx] = value;
+			idx = idx >> 1;
+			while (idx > 0) {
+				int leftChild = idx << 1;
+				int rightChild = idx << 1 | 1;
+				sg[idx] = Math.max(sg[leftChild], sg[rightChild]);
+				idx >>= 1;
+			}
+		}
+
+		public long query(int i, int j) {
+			return query(1, 1, N, i, j);
+		}
+
+		public long query(int node, int l, int r, int i, int j) {
+			if (i <= l && r <= j) {
+				return sg[node];
+			}
+			if (r < i || l > j) {
+				return inf;
+			}
+			int leftChild = node << 1;
+			int rightChild = node << 1 | 1;
+			int mid = l + r >> 1;
+			return Math.max(query(leftChild, l, mid, i, j), query(rightChild, mid + 1, r, i, j));
+		}
+	}
+
+	static class Scanner {
+		StringTokenizer st;
+		BufferedReader br;
+
+		public Scanner(InputStream s) {
+			br = new BufferedReader(new InputStreamReader(s));
+		}
+
+		public Scanner(FileReader r) {
+			br = new BufferedReader(r);
+		}
+
+		public Scanner(String s) throws IOException {
+			br = new BufferedReader(new FileReader(new File(s)));
+		}
+
+		public String readAllLines(BufferedReader reader) throws IOException {
+			StringBuilder content = new StringBuilder();
+			String line;
+
+			while ((line = reader.readLine()) != null) {
+				content.append(line);
+				content.append(System.lineSeparator());
+			}
+
+			return content.toString();
+		}
+
+		public String next() throws IOException {
+			while (st == null || !st.hasMoreTokens())
+				st = new StringTokenizer(br.readLine());
+			return st.nextToken();
+		}
+
+		public int nextInt() throws IOException {
+			return Integer.parseInt(next());
+		}
+
+		public long nextLong() throws IOException {
+			return Long.parseLong(next());
+		}
+
+		public String nextLine() throws IOException {
+			return br.readLine();
+		}
+
+		public double nextDouble() throws IOException {
+			String x = next();
+			StringBuilder sb = new StringBuilder("0");
+			double res = 0, f = 1;
+			boolean dec = false, neg = false;
+			int start = 0;
+			if (x.charAt(0) == '-') {
+				neg = true;
+				start++;
+			}
+			for (int i = start; i < x.length(); i++)
+				if (x.charAt(i) == '.') {
+					res = Long.parseLong(sb.toString());
+					sb = new StringBuilder("0");
+					dec = true;
+				} else {
+					sb.append(x.charAt(i));
+					if (dec)
+						f *= 10;
+				}
+			res += Long.parseLong(sb.toString()) / f;
+			return res * (neg ? -1 : 1);
+		}
+
+		public long[] nextlongArray(int n) throws IOException {
+			long[] a = new long[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextLong();
+			return a;
+		}
+
+		public Long[] nextLongArray(int n) throws IOException {
+			Long[] a = new Long[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextLong();
+			return a;
+		}
+
+		public int[] nextIntArray(int n) throws IOException {
+			int[] a = new int[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextInt();
+			return a;
+		}
+
+		public Integer[] nextIntegerArray(int n) throws IOException {
+			Integer[] a = new Integer[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextInt();
+			return a;
+		}
+
+		public boolean ready() throws IOException {
+			return br.ready();
+		}
+
+	}
+}
