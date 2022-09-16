@@ -1,0 +1,150 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	static Scanner sc;
+	static PrintWriter pw;
+	static Random r;
+
+	public static void main(String[] args) throws Exception {
+		pw = new PrintWriter(System.out);
+		sc = new Scanner(System.in);
+		r = new Random();
+		int n = sc.nextInt();
+		int k = sc.nextInt();
+		int[] arr = new int[n];
+		for (int i = 0; i < n; i++) {
+			arr[i] = sc.nextInt();
+		}
+		int N = 1;
+		while (n > N)
+			N <<= 1;
+		SegmentTree all[] = new SegmentTree[k + 1];
+		for (int i = 0; i <= k; i++)
+			all[i] = new SegmentTree(N);
+		for (int i = 0; i < n; i++) {
+			for (int j = 0; j <= k; j++) {
+				if (j == 0) {
+					all[j].updatePoint(arr[i], 1);
+				} else {
+					long prev = all[j - 1].query(1, arr[i] - 1);
+					if (prev != 0) {
+						all[j].updatePoint(arr[i], prev);
+					}
+				}
+			}
+		}
+		pw.println(all[k].query(1, N));
+		pw.flush();
+	}
+
+	static class SegmentTree {
+		long[] sg;
+		int N;
+
+		public SegmentTree(int N) {
+			this.N = N;
+			sg = new long[(N) << 1];
+		}
+
+		public void updatePoint(int idx, long value) {
+			idx += N - 1;
+			sg[idx] = value;
+			idx = idx >> 1;
+			while (idx > 0) {
+				int leftChild = idx << 1;
+				int rightChild = idx << 1 | 1;
+				sg[idx] = (sg[leftChild] + sg[rightChild]);
+				idx >>= 1;
+			}
+		}
+
+		public long query(int i, int j) {
+			return query(1, 1, N, i, j);
+		}
+
+		public long query(int node, int l, int r, int i, int j) {
+			if (i <= l && r <= j) {
+				return sg[node];
+			}
+			if (r < i || l > j) {
+				return 0;
+			}
+			int leftChild = node << 1;
+			int rightChild = node << 1 | 1;
+			int mid = l + r >> 1;
+			long leftQ = query(leftChild, l, mid, i, j);
+			long rightQ = query(rightChild, mid + 1, r, i, j);
+			return (leftQ + rightQ);
+		}
+	}
+
+	static class Scanner {
+		StringTokenizer st;
+		BufferedReader br;
+
+		public Scanner(InputStream s) {
+			br = new BufferedReader(new InputStreamReader(s));
+		}
+
+		public Scanner(String r) throws Exception {
+			br = new BufferedReader(new FileReader(new File(r)));
+		}
+
+		public String next() throws IOException {
+			while (st == null || !st.hasMoreTokens())
+				st = new StringTokenizer(br.readLine());
+			return st.nextToken();
+		}
+
+		public int nextInt() throws IOException {
+			return Integer.parseInt(next());
+		}
+
+		public long nextLong() throws IOException {
+			return Long.parseLong(next());
+		}
+
+		public String nextLine() throws IOException {
+			return br.readLine();
+		}
+
+		public double nextDouble() throws IOException {
+			return Double.parseDouble(next());
+		}
+
+		public long[] nextlongArray(int n) throws IOException {
+			long[] a = new long[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextLong();
+			return a;
+		}
+
+		public Long[] nextLongArray(int n) throws IOException {
+			Long[] a = new Long[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextLong();
+			return a;
+		}
+
+		public int[] nextIntArray(int n) throws IOException {
+			int[] a = new int[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextInt();
+			return a;
+		}
+
+		public Integer[] nextIntegerArray(int n) throws IOException {
+			Integer[] a = new Integer[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextInt();
+			return a;
+		}
+
+		public boolean ready() throws IOException {
+			return br.ready();
+		}
+
+	}
+
+}
