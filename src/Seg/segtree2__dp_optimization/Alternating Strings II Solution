@@ -1,0 +1,160 @@
+import java.util.*;
+import java.io.*;
+
+public class A {
+	static Scanner sc;
+	static PrintWriter pw;
+	static int inf = 100000000;
+
+	public static void main(String[] args) throws Exception {
+		pw = new PrintWriter(System.out);
+		Scanner sc = new Scanner(System.in);
+		int t = sc.nextInt();
+		for (int c = 0; c < t; c++) {
+			int n = sc.nextInt(), k = sc.nextInt();
+			char[] arr = sc.next().toCharArray();
+			if (k == 1) {
+				pw.println(n - 1);
+				continue;
+			}
+			int[] notalt = new int[n];
+			Arrays.fill(notalt, inf);
+			for (int i = 1; i < n; i++) {
+				if (arr[i] == arr[i - 1]) {
+					notalt[i] = i;
+				}
+			}
+			SparseTable sp = new SparseTable(notalt);
+			int N = 1;
+			while (n > N)
+				N <<= 1;
+			SegmentTree st = new SegmentTree(N);
+			st.updatePoint(n, 0);
+			int[] dp = new int[n];
+			Arrays.fill(dp, inf);
+			dp[n - 1] = 0;
+			for (int i = n - 2; i >= 0; i--) {
+				if (sp.query(i + 1, Math.min(n - 1, i + k - 1)) != inf) {
+					if (i + k >= n) {
+						dp[i] = 0;
+					} else {
+						dp[i] = 1 + st.query(sp.query(i + 1, Math.min(n - 1, i + k - 1)) + 2, i + k + 1);
+					}
+				}
+				dp[i] = Math.min(dp[i], 1 + dp[i + 1]);
+				st.updatePoint(i + 1, dp[i]);
+			}
+			pw.println(dp[0]);
+		}
+		pw.flush();
+	}
+
+	static class SparseTable {
+
+		int A[], SpT[][], log[];
+
+		SparseTable(int[] A) {
+			int n = A.length;
+			this.A = A;
+			log = new int[n + 1];
+			for (int i = 2; i <= n; i++) {
+				log[i] = 1 + log[i / 2];
+			}
+			int k = log[n] + 1;
+			SpT = new int[k][n];
+			for (int i = 0; i < n; i++)
+				SpT[0][i] = A[i];
+
+			for (int j = 1; (1 << j) <= n; j++)
+				for (int i = 0; i + (1 << j) - 1 < n; i++)
+					SpT[j][i] = Math.min(SpT[j - 1][i], SpT[j - 1][i + (1 << (j - 1))]);
+		}
+
+		public int query(int i, int j) {
+			int len = j - i + 1;
+			int k = log[len];
+			return Math.min(SpT[k][i], SpT[k][j - (1 << k) + 1]);
+		}
+	}
+
+	static class SegmentTree {
+		int[] sg;
+		int N;
+
+		public SegmentTree(int N) {
+			this.N = N;
+			sg = new int[(N) << 1];
+		}
+
+		public void updatePoint(int idx, int value) {
+			idx += N - 1;
+			sg[idx] = value;
+			idx = idx >> 1;
+			while (idx > 0) {
+				int leftChild = idx << 1;
+				int rightChild = idx << 1 | 1;
+				sg[idx] = Math.min(sg[leftChild], sg[rightChild]);
+				idx >>= 1;
+			}
+		}
+
+		public int query(int i, int j) {
+			return query(1, 1, N, i, j);
+		}
+
+		public int query(int node, int l, int r, int i, int j) {
+			if (i <= l && r <= j) {
+				return sg[node];
+			}
+			if (r < i || l > j) {
+				return inf;
+			}
+			int leftChild = node << 1;
+			int rightChild = node << 1 | 1;
+			int mid = l + r >> 1;
+			int leftQ = query(leftChild, l, mid, i, j);
+			int rightQ = query(rightChild, mid + 1, r, i, j);
+			return Math.min(leftQ, rightQ);
+		}
+
+		public String toString() {
+			StringBuilder s = new StringBuilder();
+			for (int i = 1; i <= N; i++) {
+				s.append(query(i, i) + ", ");
+			}
+			return s.toString();
+		}
+	}
+
+	static class Scanner {
+		StringTokenizer st;
+		BufferedReader br;
+
+		public Scanner(InputStream in) {
+			br = new BufferedReader(new InputStreamReader(in));
+		}
+
+		public Scanner(String s) throws FileNotFoundException {
+			br = new BufferedReader(new FileReader(new File(s)));
+		}
+
+		public String next() throws IOException {
+			while (st == null || !st.hasMoreTokens())
+				st = new StringTokenizer(br.readLine());
+			return st.nextToken();
+		}
+
+		public int nextInt() throws Exception {
+			return Integer.parseInt(next());
+		}
+
+		public long nextLong() throws Exception {
+			return Long.parseLong(next());
+		}
+
+		public double nextDouble() throws Exception {
+			return Double.parseDouble(next());
+		}
+	}
+
+}
