@@ -1,0 +1,242 @@
+import java.util.*;
+import java.io.*;
+
+public class A {
+	static Scanner sc;
+	static PrintWriter pw;
+	static Random random = new Random();
+
+	static void solve() throws Exception {
+		int n = sc.nextInt();
+		int k = sc.nextInt();
+		int[] p = new int[n];
+		int[] a = new int[n];
+		int[] c = new int[n];
+		Integer[] x = new Integer[n];
+		for (int i = 0; i < n; i++) {
+			p[i] = sc.nextInt();
+		}
+		for (int i = 0; i < n; i++) {
+			a[i] = sc.nextInt();
+		}
+		for (int i = 0; i < n; i++) {
+			c[i] = sc.nextInt();
+		}
+		for (int i = 0; i < n; i++) {
+			x[i] = sc.nextInt();
+		}
+		int[][] all = new int[n][4];
+		for (int i = 0; i < n; i++) {
+			all[i][0] = p[i] - a[i];
+			all[i][1] = p[i] + a[i];
+			all[i][2] = c[i];
+			all[i][3] = x[i];
+		}
+		Arrays.sort(all, (w, y) -> w[0] == y[0] ? w[1] - y[1] : w[0] - y[0]);
+		SegmentTree[] dp = new SegmentTree[k];
+		int N = 1;
+		while (N < n)
+			N <<= 1;
+		N *= 4;
+		for (int i = 0; i < k; i++) {
+			dp[i] = new SegmentTree(N);
+		}
+		long[][] myAns = new long[k][n];
+		ArrayList<Integer>[] queries = new ArrayList[n];
+		for (int i = 0; i < n; i++) {
+			queries[i] = new ArrayList<>();
+		}
+		ArrayList<Integer> allSorted = new ArrayList<>();
+		for (int v : c) {
+			allSorted.add(v);
+		}
+		for (int i = n - 1; i >= 0; i--) {
+			int s = i, end = n - 1;
+			while (s <= end) {
+				int mid = s + end >> 1;
+				if (all[mid][0] > all[i][1])
+					end = mid - 1;
+				else
+					s = mid + 1;
+			}
+			allSorted.add(all[i][2] - all[i][3]);
+			allSorted.add(all[i][2] + all[i][3]);
+			if (s == n)
+				continue;
+			queries[s].add(i);
+		}
+		allSorted.sort(null);
+		HashMap<Integer, Integer> map = new HashMap<>();
+		int idx = 1;
+		for (int v : allSorted) {
+			if (!map.containsKey(v)) {
+				map.put(v, idx++);
+			}
+		}
+		long ans = 0;
+		for (int i = n - 1; i >= 0; i--) {
+			for (int j = 0; j < k; j++) {
+				long cur = myAns[j][i] + all[i][2];
+				ans = Math.max(ans, cur);
+				dp[j].updateRange(1, map.get(all[i][2] - all[i][3]) , cur);
+				dp[j].updateRange(map.get(all[i][2] + all[i][3]) , N, cur);
+			}
+			for (int query : queries[i]) {
+				idx = query;
+				for (int j = 0; j < k; j++) {
+					if (j >= 1) {
+						myAns[j][idx] = dp[j - 1].query(map.get(all[idx][2]), map.get(all[idx][2]));
+					}
+				}
+			}
+		}
+		pw.println(ans);
+	}
+
+	public static void main(String[] args) throws Exception {
+		pw = new PrintWriter(System.out);
+		sc = new Scanner(System.in);
+		int t = sc.nextInt();
+		while (t-- > 0) {
+			solve();
+		}
+		pw.flush();
+	}
+
+	static class SegmentTree {
+		long[] sg, lazy;
+		int N;
+
+		public SegmentTree(int N) {
+			this.N = N;
+			sg = new long[(N) << 1];
+			lazy = new long[N << 1];
+			Arrays.fill(lazy, -1);
+		}
+
+		public long query(int i, int j) {
+			return query(1, 1, N, i, j);
+		}
+
+		public long query(int node, int l, int r, int i, int j) {
+			if (i <= l && r <= j) {
+				return sg[node];
+			}
+			if (r < i || l > j) {
+				return 0;
+			}
+			propagate(node, l, r);
+			int leftChild = node << 1;
+			int rightChild = node << 1 | 1;
+			int mid = l + r >> 1;
+			long leftQ = query(leftChild, l, mid, i, j);
+			long rightQ = query(rightChild, mid + 1, r, i, j);
+			return Math.max(leftQ, rightQ);
+		}
+
+		public void propagate(int node, int l, int r) {
+			if (lazy[node] == -1) {
+				return;
+			}
+			int leftChild = node << 1;
+			int rightChild = node << 1 | 1;
+			lazy[leftChild] = Math.max(lazy[node], lazy[leftChild]);
+			lazy[rightChild] = Math.max(lazy[node], lazy[rightChild]);
+			sg[leftChild] = Math.max(lazy[node], sg[leftChild]);
+			sg[rightChild] = Math.max(lazy[node], sg[rightChild]);
+			lazy[node] = -1;
+		}
+
+		public void updateRange(int i, int j, long val) {
+			updateRange(1, 1, N, i, j, val);
+		}
+
+		public void updateRange(int node, int l, int r, int i, int j, long val) {
+			if (i <= l && r <= j) {
+				lazy[node] = Math.max(lazy[node], val);
+				sg[node] = Math.max(sg[node], val);
+				return;
+			}
+			if (r < i || l > j) {
+				return;
+			}
+			propagate(node, l, r);
+			int leftChild = node << 1;
+			int rightChild = node << 1 | 1;
+			int mid = l + r >> 1;
+			updateRange(leftChild, l, mid, i, j, val);
+			updateRange(rightChild, mid + 1, r, i, j, val);
+			sg[node] = Math.max(sg[leftChild], sg[rightChild]);
+		}
+
+	}
+
+	static class Scanner {
+		StringTokenizer st;
+		BufferedReader br;
+
+		public Scanner(InputStream s) {
+			br = new BufferedReader(new InputStreamReader(s));
+		}
+
+		public Scanner(String r) throws Exception {
+			br = new BufferedReader(new FileReader(new File(r)));
+		}
+
+		public String next() throws IOException {
+			while (st == null || !st.hasMoreTokens())
+				st = new StringTokenizer(br.readLine());
+			return st.nextToken();
+		}
+
+		public int nextInt() throws IOException {
+			return Integer.parseInt(next());
+		}
+
+		public long nextLong() throws IOException {
+			return Long.parseLong(next());
+		}
+
+		public String nextLine() throws IOException {
+			return br.readLine();
+		}
+
+		public double nextDouble() throws IOException {
+			return Double.parseDouble(next());
+		}
+
+		public long[] nextlongArray(int n) throws IOException {
+			long[] a = new long[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextLong();
+			return a;
+		}
+
+		public Long[] nextLongArray(int n) throws IOException {
+			Long[] a = new Long[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextLong();
+			return a;
+		}
+
+		public int[] nextIntArray(int n) throws IOException {
+			int[] a = new int[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextInt();
+			return a;
+		}
+
+		public Integer[] nextIntegerArray(int n) throws IOException {
+			Integer[] a = new Integer[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextInt();
+			return a;
+		}
+
+		public boolean ready() throws IOException {
+			return br.ready();
+		}
+
+	}
+
+}
