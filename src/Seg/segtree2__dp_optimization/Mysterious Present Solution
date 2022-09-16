@@ -1,0 +1,187 @@
+import java.util.*;
+import java.io.*;
+
+public class Main {
+	static Scanner sc;
+	static PrintWriter pw;
+	static Random r;
+
+	public static void main(String[] args) throws Exception {
+		pw = new PrintWriter(System.out);
+		sc = new Scanner(System.in);
+		r = new Random();
+		int n = sc.nextInt();
+		int w = sc.nextInt();
+		int h = sc.nextInt();
+		int N = 1 << 20;
+		SegmentTree dp = new SegmentTree(N);
+		int[][] all = new int[n][3];
+		int[] myAns = new int[n];
+		int[] myPar = new int[n];
+		for (int i = 0; i < n; i++) {
+			all[i][0] = sc.nextInt();
+			all[i][1] = sc.nextInt();
+			all[i][2] = i;
+		}
+		Arrays.sort(all, (a, b) -> (a[0] == b[0] ? (b[1] - a[1]) : (a[0] - b[0])));
+		for (int i = n - 1; i >= 0; i--) {
+			int[] cur = all[i];
+			pair opt = dp.query(cur[1] + 1, N);
+			if (opt == null) {
+				myAns[i] = 1;
+				myPar[i] = i;
+			} else {
+				myAns[i] = 1 + opt.val;
+				myPar[i] = opt.idx;
+			}
+			dp.updatePoint(cur[1], myAns[i], i);
+		}
+		int start = -1;
+		for (int i = 0; i < n; i++) {
+			if (all[i][0] > w && all[i][1] > h) {
+				if (start == -1 || myAns[start] < myAns[i]) {
+					start = i;
+				}
+			}
+		}
+		if (start == -1) {
+			System.out.println(0);
+			return;
+		}
+		pw.println(myAns[start]);
+		while (true) {
+			pw.print(all[start][2] + 1 + " ");
+			if (start == myPar[start])
+				break;
+			start = myPar[start];
+		}
+		pw.flush();
+	}
+
+	static class pair {
+		int val, idx;
+
+		public pair(int a, int b) {
+			val = a;
+			idx = b;
+		}
+	}
+
+	static pair merge(pair left, pair right) {
+		if (left == null)
+			return right;
+		if (right == null)
+			return left;
+		if (left.val >= right.val)
+			return new pair(left.val, left.idx);
+		return new pair(right.val, right.idx);
+	}
+
+	static class SegmentTree {
+		pair[] sg;
+		int N;
+
+		public SegmentTree(int N) {
+			this.N = N;
+			sg = new pair[N << 1];
+		}
+
+		public void updatePoint(int idx, int value, int myidx) {
+			idx += N - 1;
+			sg[idx] = merge(new pair(value, myidx), sg[idx]);
+			idx = idx >> 1;
+			while (idx > 0) {
+				int leftChild = idx << 1;
+				int rightChild = idx << 1 | 1;
+				sg[idx] = merge(sg[leftChild], sg[rightChild]);
+				idx >>= 1;
+			}
+		}
+
+		public pair query(int i, int j) {
+			return query(1, 1, N, i, j);
+		}
+
+		public pair query(int node, int l, int r, int i, int j) {
+			if (i <= l && r <= j) {
+				return sg[node];
+			}
+			if (r < i || l > j) {
+				return null;
+			}
+			int leftChild = node << 1;
+			int rightChild = node << 1 | 1;
+			int mid = l + r >> 1;
+			return merge(query(leftChild, l, mid, i, j), query(rightChild, mid + 1, r, i, j));
+		}
+	}
+
+	static class Scanner {
+		StringTokenizer st;
+		BufferedReader br;
+
+		public Scanner(InputStream s) {
+			br = new BufferedReader(new InputStreamReader(s));
+		}
+
+		public Scanner(String r) throws Exception {
+			br = new BufferedReader(new FileReader(new File(r)));
+		}
+
+		public String next() throws IOException {
+			while (st == null || !st.hasMoreTokens())
+				st = new StringTokenizer(br.readLine());
+			return st.nextToken();
+		}
+
+		public int nextInt() throws IOException {
+			return Integer.parseInt(next());
+		}
+
+		public long nextLong() throws IOException {
+			return Long.parseLong(next());
+		}
+
+		public String nextLine() throws IOException {
+			return br.readLine();
+		}
+
+		public double nextDouble() throws IOException {
+			return Double.parseDouble(next());
+		}
+
+		public long[] nextlongArray(int n) throws IOException {
+			long[] a = new long[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextLong();
+			return a;
+		}
+
+		public Long[] nextLongArray(int n) throws IOException {
+			Long[] a = new Long[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextLong();
+			return a;
+		}
+
+		public int[] nextIntArray(int n) throws IOException {
+			int[] a = new int[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextInt();
+			return a;
+		}
+
+		public Integer[] nextIntegerArray(int n) throws IOException {
+			Integer[] a = new Integer[n];
+			for (int i = 0; i < n; i++)
+				a[i] = nextInt();
+			return a;
+		}
+
+		public boolean ready() throws IOException {
+			return br.ready();
+		}
+
+	}
+
+}
