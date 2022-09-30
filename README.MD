@@ -20,10 +20,10 @@ The included topics so far are:
 
 # Fenwick Tree/BIT
 
-- [Fenwick Tree](https://github.com/abd0123/Specialist-Plan/blob/master/src/fenwicktree/FenwickTree.java
+- [Fenwick Tree](https://github.com/abd0123/Specialist-Plan/blob/master/src/fenwicktree/FenwickTree.java)
 
 # Sparse Table/RMQ
 
-- [Sparse Table](https://github.com/abd0123/Specialist-Plan/blob/master/src/sparsetable/SparseTable.java
+- [Sparse Table](https://github.com/abd0123/Specialist-Plan/blob/master/src/sparsetable/SparseTable.java)
 
 Plan by Abdelrahman Fathy, Karim ElMosalamy and Omar Mohammad
