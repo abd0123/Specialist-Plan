@@ -18,4 +18,12 @@ The included topics so far are:
 - [Kth One Segment Tree](https://github.com/abd0123/Specialist-Plan/blob/master/src/segmenttree/GetKthOneInRange.java)
 - [Max Subarray Sum Segment Tree](https://github.com/abd0123/Specialist-Plan/blob/master/src/segmenttree/MaxSubarraySumSegmentTree.java)
 
+# Fenwick Tree/BIT
+
+- [Fenwick Tree](https://github.com/abd0123/Specialist-Plan/blob/master/src/fenwicktree/FenwickTree.java
+
+# Sparse Table/RMQ
+
+- [Sparse Table](https://github.com/abd0123/Specialist-Plan/blob/master/src/sparsetable/SparseTable.java
+
 Plan by Abdelrahman Fathy, Karim ElMosalamy and Omar Mohammad
