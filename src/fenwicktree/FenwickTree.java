@@ -29,7 +29,7 @@ public class FenwickTree {
 		}
 		
 		void rvupdate(int i, int v) {
-			while(i<=tree.length) {
+			while(i<tree.length) {
 				tree[i] = rv(tree[i],v);
 				i = goup(i);
 			}
@@ -57,7 +57,7 @@ public class FenwickTree {
 		
 		//Point Update
 		void update(int i, int v) {
-			while(i<=tree.length) {
+			while(i<tree.length) {
 				tree[i] = op(tree[i],v);
 				i = goup(i);
 			}
@@ -88,8 +88,8 @@ public class FenwickTree {
 			int pos = 0;
 			
 			for(int j=sz;j>=0;j--) {
-				int npos = pos + 1<<j;
-				if(npos <= tree.length && sum + tree[npos] <= k) {
+				int npos = pos + (1<<j);
+				if(npos < tree.length && sum + tree[npos] <= k) {
 					sum += tree[npos];
 					pos = npos;
 				}
