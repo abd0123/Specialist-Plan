@@ -87,6 +87,7 @@ public class Main {
 			if (a == b) {
 				return;
 			}
+			min[a] = min[b] = Math.min(min[a],min[b]);
 			if (allSets[a].size() >= allSets[b].size()) {
 				while (!allSets[b].isEmpty()) {
 					int cur = allSets[b].poll();
