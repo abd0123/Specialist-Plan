@@ -27,7 +27,7 @@ The included topics so far are:
 - [Sparse Table](https://github.com/abd0123/Specialist-Plan/blob/master/src/sparsetable/SparseTable.java)
 
 # DSU
-- [DSU](https://github.com/abd0123/Specialist-Plan/blob/master/src/DSU/DSU Implementation)
+- [DSU]("https://github.com/abd0123/Specialist-Plan/blob/master/src/DSU/DSU Implementation")
 
 # Number Theory
 - [Number Theory](https://github.com/abd0123/Specialist-Plan/blob/master/src/NumberTheory/NumberTheory.java)
