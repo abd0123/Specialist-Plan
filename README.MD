@@ -1,6 +1,9 @@
 # Summer 2022 Specialist Plan
+
 The included topics so far are:
+
 # Dynamic Programming
+
 - [Fibonacci](https://github.com/abd0123/Specialist-Plan/blob/master/src/dp/Fibonacci.java)
 - [Knapsack DP](https://github.com/abd0123/Specialist-Plan/blob/master/src/dp/Knapsack.java)
 - [Knapsack Trace](https://github.com/abd0123/Specialist-Plan/blob/master/src/dp/Trace.java)
@@ -27,9 +30,11 @@ The included topics so far are:
 - [Sparse Table](https://github.com/abd0123/Specialist-Plan/blob/master/src/sparsetable/SparseTable.java)
 
 # DSU
+
 - [DSU](https://github.com/abd0123/Specialist-Plan/blob/master/src/DSU/DSU%20Implementation)
 
 # Number Theory
-- [Number Theory](https://github.com/abd0123/Specialist-Plan/blob/master/src/NumberTheory/NumberTheory.java)
 
-Plan by Abdelrahman Fathy, Karim ElMosalamy and Omar Mohammad
+- [Number Theory](https://github.com/abd0123/Specialist-Plan/blob/master/src/NumberTheory/)
+
+Plan by [Abdelrahman Fathy](https://github.com/abd0123), [Karim ElMosalamy](https://github.com/Kemosalamy) and [Omar Mohammad](https://github.com/OmarMUhammed03)
