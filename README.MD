@@ -37,4 +37,10 @@ The included topics so far are:
 
 - [Number Theory](https://github.com/abd0123/Specialist-Plan/blob/master/src/NumberTheory/)
 
+# Graphs
+
+- [Bellman Ford](https://github.com/abd0123/Specialist-Plan/blob/master/src/graphs/BellmanFord.cpp)
+- [Floyd Warshall](https://github.com/abd0123/Specialist-Plan/blob/master/src/graphs/FloydWarshall.cpp)
+- [Tarjan / Strongly Connected Components](https://github.com/abd0123/Specialist-Plan/blob/master/src/graphs/TarjanStronglyConnectedComponents.cpp)
+
 Plan by [Abdelrahman Fathy](https://github.com/abd0123), [Karim ElMosalamy](https://github.com/Kemosalamy) and [Omar Mohammad](https://github.com/OmarMUhammed03)
